@@ -1,0 +1,45 @@
+name: composite_app
+description: "A new Flutter project."
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.4 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  image_picker: ^1.1.2
+  image_picker_for_web: ^2.2.0
+  flutter_staggered_grid_view: ^0.7.0
+  image_gallery_saver: ^1.7.1
+  permission_handler: ^10.0.0
+  path_provider: ^2.0.11
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/profile_background.jpg
+    - assets/images/mk_room_logo.png
+    - assets/images/sample1.jpg
+    - assets/images/sample2.jpg
+    - assets/images/sample3.jpg
+    - assets/images/sample4.jpg
+    - assets/images/sample5.jpg
+    - assets/images/sample6.jpg
+    - assets/images/career_image.jpg
+    - assets/images/career_background.jpg
+    - assets/images/twitter_icon.png
+    - assets/images/tiktok_icon.png
+    - assets/images/instagram_icon.png
+  fonts:
+    - family: CustomFont
+      fonts:
+        - asset: assets/fonts/custom_font.ttf

@@ -1,10 +1,12 @@
-import 'package:composite_app/screens/profile/profile_sample_page.dart';
+import 'package:composite_app/screens/career/CareerSamplePage';
+import 'package:composite_app/screens/photos/photo_sample_page.dart';
+import 'package:composite_app/screens/profile/profile_view.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io';
 import 'dart:html' as html;
 
 class InputFormView extends StatefulWidget {
@@ -15,9 +17,10 @@ class InputFormView extends StatefulWidget {
 class _InputFormViewState extends State<InputFormView> {
   final _formKey = GlobalKey<FormState>();
   int _currentStep = 0;
-  List<dynamic> photos = []; // XFile or File
+  List<dynamic> photos = [];
+  dynamic backgroundImage;
 
-  // 各フィールドのコントローラを作成
+  // 各フィールド用のコントローラ
   TextEditingController nameController = TextEditingController();
   TextEditingController nameJapaneseController = TextEditingController();
   TextEditingController birthDateController = TextEditingController();
@@ -42,40 +45,10 @@ class _InputFormViewState extends State<InputFormView> {
   TextEditingController managerPhoneController = TextEditingController();
   TextEditingController agencyController = TextEditingController();
 
-  // プロフィールページに遷移する処理
-  void _goToProfilePage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ProfileSamplePage(
-          name: nameController.text,
-          nameJapanese: nameJapaneseController.text,
-          birthDate: birthDateController.text,
-          birthPlace: birthPlaceController.text,
-          height: heightController.text,
-          weight: weightController.text,
-          bust: bustController.text,
-          waist: waistController.text,
-          hip: hipController.text,
-          shoeSize: shoeSizeController.text,
-          hobby: hobbyController.text,
-          skill: skillController.text,
-          qualification: qualificationController.text,
-          education: educationController.text,
-          catchphrase: catchphraseController.text,
-          followers: followersController.text,
-          twitterAccount: twitterAccountController.text,
-          tiktokAccount: tiktokAccountController.text,
-          instagramAccount: instagramAccountController.text,
-          managerName: managerNameController.text,
-          managerEmail: managerEmailController.text,
-          managerPhone: managerPhoneController.text,
-          agency: agencyController.text,
-        ),
-      ),
-    );
-  }
+  // キャリア情報
+  List<Map<String, List<String>>> careerList = [];
 
+  // 写真をアップロードするメソッド
   Future<void> _pickImage() async {
     if (kIsWeb) {
       final html.FileUploadInputElement input = html.FileUploadInputElement()
@@ -106,12 +79,100 @@ class _InputFormViewState extends State<InputFormView> {
     }
   }
 
+  // 画像を保存するメソッド
   Future<String> _saveImageToTempDirectory(XFile image) async {
     final directory = await getTemporaryDirectory();
     final imageName = path.basename(image.path);
     final savedImage =
         await File(image.path).copy('${directory.path}/$imageName');
     return savedImage.path;
+  }
+
+  // 背景画像を選択するメソッド
+  Future<void> _pickBackgroundImage() async {
+    if (kIsWeb) {
+      final html.FileUploadInputElement input = html.FileUploadInputElement()
+        ..accept = 'image/*';
+      input.click();
+      await input.onChange.first;
+      if (input.files!.isNotEmpty) {
+        final file = input.files![0];
+        final reader = html.FileReader();
+        reader.readAsDataUrl(file);
+        await reader.onLoad.first;
+        setState(() {
+          backgroundImage = reader.result;
+        });
+      }
+    } else {
+      final ImagePicker _picker = ImagePicker();
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        String savedImagePath = await _saveImageToTempDirectory(image);
+        setState(() {
+          backgroundImage = File(savedImagePath);
+        });
+      }
+    }
+  }
+
+  // プロフィールページに遷移するメソッド
+  void _goToProfilePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProfileView(
+          name: nameController.text,
+          nameJapanese: nameJapaneseController.text,
+          birthDate: birthDateController.text,
+          birthPlace: birthPlaceController.text,
+          height: heightController.text,
+          weight: weightController.text,
+          bust: bustController.text,
+          waist: waistController.text,
+          hip: hipController.text,
+          shoeSize: shoeSizeController.text,
+          hobby: hobbyController.text,
+          skill: skillController.text,
+          qualification: qualificationController.text,
+          education: educationController.text,
+          catchphrase: catchphraseController.text,
+          followers: followersController.text,
+          twitterAccount: twitterAccountController.text,
+          tiktokAccount: tiktokAccountController.text,
+          instagramAccount: instagramAccountController.text,
+          managerName: managerNameController.text,
+          managerEmail: managerEmailController.text,
+          managerPhone: managerPhoneController.text,
+          agency: agencyController.text,
+          backgroundImage: backgroundImage, // 背景画像
+        ),
+      ),
+    );
+  }
+
+  // キャリアサンプルページに遷移するメソッド
+  void _goToCareerPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CareerSamplePage(
+          careerList: careerList, // キャリア情報を渡す
+        ),
+      ),
+    );
+  }
+
+  // Photoページに遷移するメソッド
+  void _goToPhotoPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PhotoPage(
+          photos: photos, // 写真リストを渡す
+        ),
+      ),
+    );
   }
 
   @override
@@ -192,23 +253,22 @@ class _InputFormViewState extends State<InputFormView> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                TextButton(
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    backgroundColor: Colors.blueAccent,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 4,
-                  ),
+                ElevatedButton(
                   onPressed: _goToProfilePage,
-                  child: Text(
-                    'プロフィールページ',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                  child: Text('プロフィールページを表示'),
                 ),
-                // 他のボタンを追加可能
+                ElevatedButton(
+                  onPressed: _goToCareerPage,
+                  child: Text('キャリアページを表示'),
+                ),
+                ElevatedButton(
+                  onPressed: _goToPhotoPage, // Photoページに遷移
+                  child: Text('Photoページを表示'),
+                ),
+                ElevatedButton(
+                  onPressed: _pickBackgroundImage,
+                  child: Text('背景画像を選択'),
+                ),
               ],
             ),
           ),
@@ -315,12 +375,58 @@ class _InputFormViewState extends State<InputFormView> {
       children: [
         ElevatedButton(
           onPressed: () {
-            // 新しいカテゴリーを追加する処理
+            setState(() {
+              careerList.add({'新しいカテゴリー': []});
+            });
           },
           child: Text('新しいカテゴリーを追加'),
         ),
         SizedBox(height: 16),
-        // 入力項目を追加していくロジック
+        for (var entry in careerList.asMap().entries)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    decoration: InputDecoration(labelText: 'カテゴリー名'),
+                    initialValue: entry.value.keys.first,
+                    onChanged: (value) {
+                      setState(() {
+                        var items = careerList[entry.key]
+                            .remove(entry.value.keys.first)!;
+                        careerList[entry.key] = {value: items};
+                      });
+                    },
+                  ),
+                  for (var item in entry.value.values.first.asMap().entries)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: TextFormField(
+                        decoration:
+                            InputDecoration(labelText: '項目 ${item.key + 1}'),
+                        initialValue: item.value,
+                        onChanged: (value) {
+                          setState(() {
+                            careerList[entry.key]
+                                [entry.value.keys.first]![item.key] = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        careerList[entry.key][entry.value.keys.first]!.add('');
+                      });
+                    },
+                    child: Text('項目を追加'),
+                  ),
+                ],
+              ),
+            ),
+          ),
       ],
     );
   }

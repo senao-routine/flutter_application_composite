@@ -13,7 +13,34 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   static final List<Widget> _widgetOptions = <Widget>[
-    FixedSizeView(child: ProfileView()),
+    FixedSizeView(
+      child: ProfileView(
+        name: 'John Doe',
+        nameJapanese: 'ジョン・ドー',
+        birthDate: '1990-01-01',
+        birthPlace: 'Tokyo',
+        height: '180cm',
+        weight: '70kg',
+        bust: '90cm',
+        waist: '70cm', // ここでwaistも渡す
+        hip: '95cm',
+        shoeSize: '27cm',
+        hobby: '読書',
+        skill: 'プログラミング',
+        qualification: '英検1級',
+        education: '東京大学',
+        catchphrase: 'チャレンジ精神',
+        followers: '10000',
+        twitterAccount: '@johndoe',
+        tiktokAccount: '@johndoe',
+        instagramAccount: '@johndoe',
+        managerName: '田中 太郎',
+        managerEmail: 'tanaka@example.com',
+        managerPhone: '080-1234-5678',
+        agency: 'XYZプロダクション',
+        backgroundImage: null, // ここで背景画像も渡せる
+      ),
+    ),
     FixedSizeView(child: CareerView()),
     FixedSizeView(child: PhotosView()),
   ];

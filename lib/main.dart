@@ -1,8 +1,8 @@
 import 'package:composite_app/firebase_options.dart';
 import 'package:composite_app/inputformview.dart';
-import 'package:composite_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +22,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: InputFormView(),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('ja', ''), // 日本語
+        const Locale('en', ''), // 英語
+      ],
     );
   }
 }

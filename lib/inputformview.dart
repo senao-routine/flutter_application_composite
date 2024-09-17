@@ -1,4 +1,4 @@
-import 'package:composite_app/screens/career/CareerSamplePage';
+import 'package:composite_app/screens/career/CareerSamplePage.dart';
 import 'package:composite_app/screens/photos/photo_sample_page.dart';
 import 'package:composite_app/screens/profile/profile_view.dart';
 import 'package:flutter/foundation.dart';
@@ -19,6 +19,7 @@ class _InputFormViewState extends State<InputFormView> {
   int _currentStep = 0;
   List<dynamic> photos = [];
   dynamic backgroundImage;
+  dynamic careerBackgroundImage; // キャリア情報用の背景画像
 
   // 各フィールド用のコントローラ
   TextEditingController nameController = TextEditingController();
@@ -35,8 +36,6 @@ class _InputFormViewState extends State<InputFormView> {
   TextEditingController skillController = TextEditingController();
   TextEditingController qualificationController = TextEditingController();
   TextEditingController educationController = TextEditingController();
-  TextEditingController catchphraseController = TextEditingController();
-  TextEditingController followersController = TextEditingController();
   TextEditingController twitterAccountController = TextEditingController();
   TextEditingController tiktokAccountController = TextEditingController();
   TextEditingController instagramAccountController = TextEditingController();
@@ -88,7 +87,7 @@ class _InputFormViewState extends State<InputFormView> {
     return savedImage.path;
   }
 
-  // 背景画像を選択するメソッド
+  // プロフィールページ用の背景画像を選択するメソッド
   Future<void> _pickBackgroundImage() async {
     if (kIsWeb) {
       final html.FileUploadInputElement input = html.FileUploadInputElement()
@@ -116,6 +115,34 @@ class _InputFormViewState extends State<InputFormView> {
     }
   }
 
+  // キャリアページ用の背景画像を選択するメソッド
+  Future<void> _pickCareerBackgroundImage() async {
+    if (kIsWeb) {
+      final html.FileUploadInputElement input = html.FileUploadInputElement()
+        ..accept = 'image/*';
+      input.click();
+      await input.onChange.first;
+      if (input.files!.isNotEmpty) {
+        final file = input.files![0];
+        final reader = html.FileReader();
+        reader.readAsDataUrl(file);
+        await reader.onLoad.first;
+        setState(() {
+          careerBackgroundImage = reader.result;
+        });
+      }
+    } else {
+      final ImagePicker _picker = ImagePicker();
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        String savedImagePath = await _saveImageToTempDirectory(image);
+        setState(() {
+          careerBackgroundImage = File(savedImagePath);
+        });
+      }
+    }
+  }
+
   // プロフィールページに遷移するメソッド
   void _goToProfilePage() {
     Navigator.push(
@@ -136,8 +163,6 @@ class _InputFormViewState extends State<InputFormView> {
           skill: skillController.text,
           qualification: qualificationController.text,
           education: educationController.text,
-          catchphrase: catchphraseController.text,
-          followers: followersController.text,
           twitterAccount: twitterAccountController.text,
           tiktokAccount: tiktokAccountController.text,
           instagramAccount: instagramAccountController.text,
@@ -145,7 +170,7 @@ class _InputFormViewState extends State<InputFormView> {
           managerEmail: managerEmailController.text,
           managerPhone: managerPhoneController.text,
           agency: agencyController.text,
-          backgroundImage: backgroundImage, // 背景画像
+          backgroundImage: backgroundImage, // プロフィールの背景画像
         ),
       ),
     );
@@ -156,8 +181,9 @@ class _InputFormViewState extends State<InputFormView> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CareerSamplePage(
+        builder: (context) => CareerView(
           careerList: careerList, // キャリア情報を渡す
+          backgroundImage: careerBackgroundImage, // キャリアの背景画像
         ),
       ),
     );
@@ -173,6 +199,23 @@ class _InputFormViewState extends State<InputFormView> {
         ),
       ),
     );
+  }
+
+  // 日付選択のダイアログを表示するメソッド
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      locale: const Locale("ja"), // 日本語設定
+    );
+    if (picked != null && picked != DateTime.now()) {
+      setState(() {
+        birthDateController.text =
+            "${picked.year}.${picked.month}.${picked.day}"; // 西暦.月.日形式
+      });
+    }
   }
 
   @override
@@ -265,10 +308,6 @@ class _InputFormViewState extends State<InputFormView> {
                   onPressed: _goToPhotoPage, // Photoページに遷移
                   child: Text('Photoページを表示'),
                 ),
-                ElevatedButton(
-                  onPressed: _pickBackgroundImage,
-                  child: Text('背景画像を選択'),
-                ),
               ],
             ),
           ),
@@ -297,8 +336,25 @@ class _InputFormViewState extends State<InputFormView> {
           _buildTextField('名前（ローマ字）', Icons.person, nameController),
           _buildTextField(
               '名前（日本語）', Icons.person_outline, nameJapaneseController),
-          _buildTextField('生年月日', Icons.cake, birthDateController),
-          _buildTextField('出身地', Icons.location_on, birthPlaceController),
+          // 生年月日の選択ウィジェット
+          GestureDetector(
+            onTap: () => _selectDate(context),
+            child: AbsorbPointer(
+              child: TextFormField(
+                controller: birthDateController,
+                decoration: InputDecoration(
+                  labelText: '生年月日',
+                  icon: Icon(Icons.cake),
+                ),
+              ),
+            ),
+          ),
+          _buildTextField('出身', Icons.location_on, birthPlaceController),
+          // 背景画像選択ボタンを追加
+          ElevatedButton(
+            onPressed: _pickBackgroundImage,
+            child: Text('プロフィールページの背景画像を選択'),
+          ),
         ],
       ),
     );
@@ -320,20 +376,35 @@ class _InputFormViewState extends State<InputFormView> {
   Widget _buildSkillsAndEducationForm() {
     return Column(
       children: [
-        _buildTextField('趣味', Icons.favorite, hobbyController),
-        _buildTextField('特技', Icons.star, skillController),
-        _buildTextField('資格', Icons.school, qualificationController),
-        _buildTextField('学歴', Icons.school, educationController),
+        _buildTextFieldWithLimit('趣味', Icons.favorite, hobbyController),
+        _buildTextFieldWithLimit('特技', Icons.star, skillController),
+        _buildTextFieldWithLimit('資格', Icons.school, qualificationController),
         _buildTextField(
-            'キャッチフレーズ', Icons.catching_pokemon, catchphraseController),
+            '学歴', Icons.school, educationController), // 学歴は特に文字制限を加えない
       ],
+    );
+  }
+
+  Widget _buildTextFieldWithLimit(
+      String label, IconData icon, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          icon: Icon(icon),
+          hintText: '30文字以内で入力してください', // ここで注意書きを表示
+          border: OutlineInputBorder(),
+        ),
+        maxLength: 30, // 文字制限を追加
+      ),
     );
   }
 
   Widget _buildSNSInfoForm() {
     return Column(
       children: [
-        _buildTextField('フォロワー数', Icons.people, followersController),
         _buildTextField(
             'Twitterアカウント', Icons.alternate_email, twitterAccountController),
         _buildTextField(
@@ -427,6 +498,11 @@ class _InputFormViewState extends State<InputFormView> {
               ),
             ),
           ),
+        // キャリア背景画像選択ボタンを追加
+        ElevatedButton(
+          onPressed: _pickCareerBackgroundImage,
+          child: Text('キャリアページの背景画像を選択'),
+        ),
       ],
     );
   }

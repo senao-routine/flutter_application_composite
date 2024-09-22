@@ -55,14 +55,12 @@ class ProfileView extends StatelessWidget {
   // 年齢を計算するメソッド
   int calculateAge(String birthDate) {
     try {
-      // 生年月日の形式が不明なため、ピリオドやスラッシュに対応する
       List<String> parts;
       if (birthDate.contains('.')) {
         parts = birthDate.split('.');
       } else if (birthDate.contains('/')) {
         parts = birthDate.split('/');
       } else {
-        // 期待される形式でなければ、エラーハンドリング
         throw FormatException('Unknown date format');
       }
 
@@ -87,7 +85,6 @@ class ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 年齢の計算
     int age = calculateAge(birthDate);
 
     return Scaffold(
@@ -96,19 +93,29 @@ class ProfileView extends StatelessWidget {
           aspectRatio: 3 / 4, // 3:4のアスペクト比に設定
           child: Stack(
             children: [
-              // 背景画像
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: backgroundImage is File
-                          ? FileImage(backgroundImage)
-                          : NetworkImage(backgroundImage),
-                      fit: BoxFit.cover, // 背景画像をフルスクリーンに調整
+              // 背景画像があるかどうかをチェック
+              if (backgroundImage != null) ...[
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: backgroundImage is File
+                            ? FileImage(backgroundImage)
+                            : NetworkImage(backgroundImage),
+                        fit: BoxFit.cover, // 背景画像をフルスクリーンに調整
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ] else ...[
+                // 背景画像がない場合のメッセージ
+                Center(
+                  child: Text(
+                    'アップロードされた写真がありません',
+                    style: TextStyle(fontSize: 18, color: Colors.black),
+                  ),
+                ),
+              ],
               // 名前〜趣味・特技を白いボックスに入れて左下に配置
               Positioned(
                 left: 20,
@@ -146,26 +153,14 @@ class ProfileView extends StatelessWidget {
                                   ),
                                 ),
                                 SizedBox(width: 5),
-                                Center(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center, // 中央揃え
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.end, // 年齢を名前の横に揃える
-                                    children: [
-                                      SizedBox(width: 2), // 名前と年齢の間にスペースを追加
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 15.0), // 年齢を少し下にずらす
-                                        child: Text(
-                                          '($age)', // 年齢を表示
-                                          style: TextStyle(
-                                            fontSize: 15, // 年齢のフォントサイズ
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 15.0),
+                                  child: Text(
+                                    '($age)', // 年齢を表示
+                                    style: TextStyle(
+                                      fontSize: 15, // 年齢のフォントサイズ
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -174,7 +169,6 @@ class ProfileView extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 20), // 名前と生年月日の間に余白を追加
-                      // 生年月日と出身を同じ行に表示し、中央揃え
                       Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center, // 中央揃え
@@ -185,7 +179,6 @@ class ProfileView extends StatelessWidget {
                           ],
                         ),
                       ),
-                      // 身長と体重を同じ行に表示し、中央揃え
                       Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center, // 中央揃え
@@ -196,7 +189,6 @@ class ProfileView extends StatelessWidget {
                           ],
                         ),
                       ),
-                      // BWHと靴のサイズを同じ行に表示し、中央揃え
                       Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center, // 中央揃え
@@ -214,25 +206,20 @@ class ProfileView extends StatelessWidget {
                       SizedBox(height: 10),
                       Text(
                         '趣味: $hobby',
-                        style: _detailTextStyle()
-                            .copyWith(fontSize: 14), // フォントサイズを12に変更
+                        style: _detailTextStyle().copyWith(fontSize: 14),
                       ),
                       Text(
                         '特技: $skill',
-                        style: _detailTextStyle()
-                            .copyWith(fontSize: 14), // フォントサイズを12に変更
+                        style: _detailTextStyle().copyWith(fontSize: 14),
                       ),
                       Text(
                         '資格: $qualification',
-                        style: _detailTextStyle()
-                            .copyWith(fontSize: 14), // フォントサイズを12に変更
+                        style: _detailTextStyle().copyWith(fontSize: 14),
                       ),
                       Text(
                         '学歴: $education',
-                        style: _detailTextStyle()
-                            .copyWith(fontSize: 14), // フォントサイズを12に変更
+                        style: _detailTextStyle().copyWith(fontSize: 14),
                       ),
-
                       SizedBox(height: 100), // キャッチフレーズ用の固定スペース
                     ],
                   ),
@@ -326,14 +313,12 @@ class ProfileView extends StatelessWidget {
   Widget _buildSNSInfo(String platform, String account, String iconPath) {
     return Row(
       children: [
-        // アイコンをさらに大きく表示
         Image.asset(
           iconPath,
           width: 50, // アイコンのサイズをさらに大きく
           height: 50,
         ),
         SizedBox(width: 10),
-        // アカウント名を大きく表示
         Expanded(
           child: Text(
             account,

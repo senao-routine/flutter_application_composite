@@ -3,11 +3,12 @@ import 'package:composite_app/screens/photos/photo_sample_page.dart';
 import 'package:composite_app/screens/profile/profile_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as path;
 import 'dart:io';
 import 'dart:html' as html;
+import 'package:path/path.dart' as path;
+
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 class InputFormView extends StatefulWidget {
   @override
@@ -216,6 +217,15 @@ class _InputFormViewState extends State<InputFormView> {
             "${picked.year}.${picked.month}.${picked.day}"; // 西暦.月.日形式
       });
     }
+  }
+
+  // 現在のキャリア行数を計算するメソッド
+  int _calculateTotalLines() {
+    int totalLines = 0;
+    for (var category in careerList) {
+      totalLines += category.values.first.length; // 各カテゴリー内の項目数を合計
+    }
+    return totalLines;
   }
 
   @override
@@ -446,9 +456,16 @@ class _InputFormViewState extends State<InputFormView> {
       children: [
         ElevatedButton(
           onPressed: () {
-            setState(() {
-              careerList.add({'新しいカテゴリー': []});
-            });
+            // キャリア全体の行数が20行以内なら新しいカテゴリーを追加
+            if (_calculateTotalLines() < 20) {
+              setState(() {
+                careerList.add({'新しいカテゴリー': []});
+              });
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('最大20行までしか入力できません')),
+              );
+            }
           },
           child: Text('新しいカテゴリーを追加'),
         ),
@@ -488,9 +505,17 @@ class _InputFormViewState extends State<InputFormView> {
                     ),
                   ElevatedButton(
                     onPressed: () {
-                      setState(() {
-                        careerList[entry.key][entry.value.keys.first]!.add('');
-                      });
+                      // キャリア全体の行数が20行以内なら項目を追加
+                      if (_calculateTotalLines() < 20) {
+                        setState(() {
+                          careerList[entry.key][entry.value.keys.first]!
+                              .add('');
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('最大20行までしか入力できません')),
+                        );
+                      }
                     },
                     child: Text('項目を追加'),
                   ),

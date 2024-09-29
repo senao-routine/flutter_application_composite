@@ -469,6 +469,7 @@ class _InputFormViewState extends State<InputFormView> {
           },
           child: Text('新しいカテゴリーを追加'),
         ),
+
         SizedBox(height: 16),
         for (var entry in careerList.asMap().entries)
           Card(
@@ -489,19 +490,36 @@ class _InputFormViewState extends State<InputFormView> {
                     },
                   ),
                   for (var item in entry.value.values.first.asMap().entries)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: TextFormField(
-                        decoration:
-                            InputDecoration(labelText: '項目 ${item.key + 1}'),
-                        initialValue: item.value,
-                        onChanged: (value) {
-                          setState(() {
-                            careerList[entry.key]
-                                [entry.value.keys.first]![item.key] = value;
-                          });
-                        },
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                  labelText: '項目 ${item.key + 1}'),
+                              initialValue: item.value,
+                              onChanged: (value) {
+                                setState(() {
+                                  careerList[entry.key]
+                                          [entry.value.keys.first]![item.key] =
+                                      value;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                        // 削除ボタンを追加
+                        IconButton(
+                          icon: Icon(Icons.delete, color: Colors.black),
+                          onPressed: () {
+                            setState(() {
+                              careerList[entry.key][entry.value.keys.first]!
+                                  .removeAt(item.key);
+                            });
+                          },
+                        ),
+                      ],
                     ),
                   ElevatedButton(
                     onPressed: () {
@@ -546,22 +564,48 @@ class _InputFormViewState extends State<InputFormView> {
             : Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: photos.map((photo) {
-                  if (kIsWeb) {
-                    return Image.network(
-                      photo,
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    );
-                  } else {
-                    return Image.file(
-                      photo,
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    );
-                  }
+                children: photos.asMap().entries.map((entry) {
+                  int index = entry.key;
+                  var photo = entry.value;
+
+                  return Stack(
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: photo is String
+                            ? Image.network(
+                                photo,
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.file(
+                                photo,
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                      ),
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: IconButton(
+                          icon:
+                              Icon(Icons.delete, color: Colors.black, size: 20),
+                          onPressed: () {
+                            setState(() {
+                              photos.removeAt(index); // 指定したインデックスの写真を削除
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  );
                 }).toList(),
               ),
       ],

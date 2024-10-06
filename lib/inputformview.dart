@@ -11,6 +11,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 class InputFormView extends StatefulWidget {
+  const InputFormView({super.key});
+
   @override
   _InputFormViewState createState() => _InputFormViewState();
 }
@@ -67,8 +69,8 @@ class _InputFormViewState extends State<InputFormView> {
         });
       }
     } else {
-      final ImagePicker _picker = ImagePicker();
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
       if (image != null) {
         String savedImagePath = await _saveImageToTempDirectory(image);
@@ -105,8 +107,8 @@ class _InputFormViewState extends State<InputFormView> {
         });
       }
     } else {
-      final ImagePicker _picker = ImagePicker();
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
         String savedImagePath = await _saveImageToTempDirectory(image);
         setState(() {
@@ -133,8 +135,8 @@ class _InputFormViewState extends State<InputFormView> {
         });
       }
     } else {
-      final ImagePicker _picker = ImagePicker();
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
         String savedImagePath = await _saveImageToTempDirectory(image);
         setState(() {
@@ -232,7 +234,7 @@ class _InputFormViewState extends State<InputFormView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('タレントプロフィール入力'),
+        title: const Text('タレントプロフィール入力'),
         elevation: 0,
       ),
       body: Column(
@@ -240,7 +242,7 @@ class _InputFormViewState extends State<InputFormView> {
           Expanded(
             child: Theme(
               data: Theme.of(context).copyWith(
-                colorScheme: ColorScheme.light(primary: Colors.blue),
+                colorScheme: const ColorScheme.light(primary: Colors.blue),
               ),
               child: Stepper(
                 type: StepperType.vertical,
@@ -253,7 +255,7 @@ class _InputFormViewState extends State<InputFormView> {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('プロフィールが保存されました')),
+                        const SnackBar(content: Text('プロフィールが保存されました')),
                       );
                     }
                   }
@@ -263,37 +265,37 @@ class _InputFormViewState extends State<InputFormView> {
                     : null,
                 steps: [
                   Step(
-                    title: Text('基本情報'),
+                    title: const Text('基本情報'),
                     content: _buildCenteredForm(_buildBasicInfoForm()),
                     isActive: _currentStep >= 0,
                   ),
                   Step(
-                    title: Text('身体情報'),
+                    title: const Text('身体情報'),
                     content: _buildCenteredForm(_buildPhysicalInfoForm()),
                     isActive: _currentStep >= 1,
                   ),
                   Step(
-                    title: Text('経歴・特技'),
+                    title: const Text('経歴・特技'),
                     content: _buildCenteredForm(_buildSkillsAndEducationForm()),
                     isActive: _currentStep >= 2,
                   ),
                   Step(
-                    title: Text('SNS情報'),
+                    title: const Text('SNS情報'),
                     content: _buildCenteredForm(_buildSNSInfoForm()),
                     isActive: _currentStep >= 3,
                   ),
                   Step(
-                    title: Text('マネージャー情報'),
+                    title: const Text('マネージャー情報'),
                     content: _buildCenteredForm(_buildManagerInfoForm()),
                     isActive: _currentStep >= 4,
                   ),
                   Step(
-                    title: Text('キャリア情報'),
+                    title: const Text('キャリア情報'),
                     content: _buildCenteredForm(_buildCareerForm()),
                     isActive: _currentStep >= 5,
                   ),
                   Step(
-                    title: Text('写真'),
+                    title: const Text('写真'),
                     content: _buildCenteredForm(_buildPhotoForm()),
                     isActive: _currentStep >= 6,
                   ),
@@ -308,15 +310,15 @@ class _InputFormViewState extends State<InputFormView> {
               children: [
                 ElevatedButton(
                   onPressed: _goToProfilePage,
-                  child: Text('プロフィールページを表示'),
+                  child: const Text('プロフィールページを表示'),
                 ),
                 ElevatedButton(
                   onPressed: _goToCareerPage,
-                  child: Text('キャリアページを表示'),
+                  child: const Text('キャリアページを表示'),
                 ),
                 ElevatedButton(
                   onPressed: _goToPhotoPage, // Photoページに遷移
-                  child: Text('Photoページを表示'),
+                  child: const Text('Photoページを表示'),
                 ),
               ],
             ),
@@ -330,8 +332,8 @@ class _InputFormViewState extends State<InputFormView> {
     return SingleChildScrollView(
       child: Center(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          constraints: BoxConstraints(maxWidth: 600),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          constraints: const BoxConstraints(maxWidth: 600),
           child: form,
         ),
       ),
@@ -352,7 +354,7 @@ class _InputFormViewState extends State<InputFormView> {
             child: AbsorbPointer(
               child: TextFormField(
                 controller: birthDateController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: '生年月日',
                   icon: Icon(Icons.cake),
                 ),
@@ -363,7 +365,7 @@ class _InputFormViewState extends State<InputFormView> {
           // 背景画像選択ボタンを追加
           ElevatedButton(
             onPressed: _pickBackgroundImage,
-            child: Text('プロフィールページの背景画像を選択'),
+            child: const Text('プロフィールページの背景画像を選択'),
           ),
         ],
       ),
@@ -405,7 +407,7 @@ class _InputFormViewState extends State<InputFormView> {
           labelText: label,
           icon: Icon(icon),
           hintText: '30文字以内で入力してください', // ここで注意書きを表示
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
         maxLength: 30, // 文字制限を追加
       ),
@@ -445,7 +447,7 @@ class _InputFormViewState extends State<InputFormView> {
         decoration: InputDecoration(
           labelText: label,
           icon: Icon(icon),
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
       ),
     );
@@ -463,14 +465,14 @@ class _InputFormViewState extends State<InputFormView> {
               });
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('最大20行までしか入力できません')),
+                const SnackBar(content: Text('最大20行までしか入力できません')),
               );
             }
           },
-          child: Text('新しいカテゴリーを追加'),
+          child: const Text('新しいカテゴリーを追加'),
         ),
 
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         for (var entry in careerList.asMap().entries)
           Card(
             child: Padding(
@@ -479,7 +481,7 @@ class _InputFormViewState extends State<InputFormView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextFormField(
-                    decoration: InputDecoration(labelText: 'カテゴリー名'),
+                    decoration: const InputDecoration(labelText: 'カテゴリー名'),
                     initialValue: entry.value.keys.first,
                     onChanged: (value) {
                       setState(() {
@@ -511,7 +513,7 @@ class _InputFormViewState extends State<InputFormView> {
                         ),
                         // 削除ボタンを追加
                         IconButton(
-                          icon: Icon(Icons.delete, color: Colors.black),
+                          icon: const Icon(Icons.delete, color: Colors.black),
                           onPressed: () {
                             setState(() {
                               careerList[entry.key][entry.value.keys.first]!
@@ -531,11 +533,11 @@ class _InputFormViewState extends State<InputFormView> {
                         });
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('最大20行までしか入力できません')),
+                          const SnackBar(content: Text('最大20行までしか入力できません')),
                         );
                       }
                     },
-                    child: Text('項目を追加'),
+                    child: const Text('項目を追加'),
                   ),
                 ],
               ),
@@ -544,7 +546,7 @@ class _InputFormViewState extends State<InputFormView> {
         // キャリア背景画像選択ボタンを追加
         ElevatedButton(
           onPressed: _pickCareerBackgroundImage,
-          child: Text('キャリアページの背景画像を選択'),
+          child: const Text('キャリアページの背景画像を選択'),
         ),
       ],
     );
@@ -554,58 +556,32 @@ class _InputFormViewState extends State<InputFormView> {
     return Column(
       children: [
         ElevatedButton.icon(
-          icon: Icon(Icons.add_a_photo),
-          label: Text('写真を追加'),
+          icon: const Icon(Icons.add_a_photo),
+          label: const Text('写真を追加'),
           onPressed: _pickImage,
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         photos.isEmpty
-            ? Text('写真が選択されていません')
+            ? const Text('写真が選択されていません')
             : Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: photos.asMap().entries.map((entry) {
-                  int index = entry.key;
-                  var photo = entry.value;
-
-                  return Stack(
-                    children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: photo is String
-                            ? Image.network(
-                                photo,
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                              )
-                            : Image.file(
-                                photo,
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                              ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: IconButton(
-                          icon:
-                              Icon(Icons.delete, color: Colors.black, size: 20),
-                          onPressed: () {
-                            setState(() {
-                              photos.removeAt(index); // 指定したインデックスの写真を削除
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  );
+                children: photos.map((photo) {
+                  if (kIsWeb) {
+                    return Image.network(
+                      photo,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    );
+                  } else {
+                    return Image.file(
+                      photo,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    );
+                  }
                 }).toList(),
               ),
       ],

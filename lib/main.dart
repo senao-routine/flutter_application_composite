@@ -13,6 +13,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,13 +24,13 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: InputFormView(),
-      localizationsDelegates: [
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
-      supportedLocales: [
-        const Locale('ja', ''), // 日本語
-        const Locale('en', ''), // 英語
+      supportedLocales: const [
+        Locale('ja', ''), // 日本語
+        Locale('en', ''), // 英語
       ],
     );
   }

@@ -7,7 +7,7 @@ import 'dart:html' as html;
 class PhotoPage extends StatefulWidget {
   final List<dynamic> photos;
 
-  PhotoPage({required this.photos});
+  const PhotoPage({super.key, required this.photos});
 
   @override
   _PhotoPageState createState() => _PhotoPageState();
@@ -15,6 +15,7 @@ class PhotoPage extends StatefulWidget {
 
 class _PhotoPageState extends State<PhotoPage> {
   final GlobalKey _globalKey = GlobalKey();
+  dynamic _uploadedIcon; // アイコンの画像を格納する変数
 
   // Method to capture and save the screen as an image
   Future<void> _captureAndSavePng() async {
@@ -34,15 +35,56 @@ class _PhotoPageState extends State<PhotoPage> {
       html.Url.revokeObjectUrl(url);
 
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('画像を保存しました')));
+          .showSnackBar(const SnackBar(content: Text('画像を保存しました')));
     } catch (e) {
       print("キャプチャエラー: $e");
+    }
+  }
+
+  // アイコンをアップロードするメソッド (Web対応)
+  Future<void> _pickIcon() async {
+    final html.FileUploadInputElement input = html.FileUploadInputElement()
+      ..accept = 'image/*';
+    input.click();
+
+    await input.onChange.first;
+    if (input.files!.isNotEmpty) {
+      final reader = html.FileReader();
+      reader.readAsDataUrl(input.files![0]);
+
+      await reader.onLoad.first;
+      setState(() {
+        _uploadedIcon = reader.result;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Photoページ'),
+            SizedBox(width: 10),
+            ElevatedButton(
+              onPressed: _pickIcon,
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                backgroundColor: Colors.blueAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'アイコンをアップロード',
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
       body: Center(
         child: AspectRatio(
           aspectRatio: 3 / 4,
@@ -52,24 +94,42 @@ class _PhotoPageState extends State<PhotoPage> {
                 key: _globalKey,
                 child: Container(
                   color: Colors.white,
-                  child: Column(
+                  child: Stack(
                     children: [
-                      Expanded(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            double width = constraints.maxWidth;
-                            double height = constraints.maxHeight;
-                            return Column(
-                              children: [
-                                _buildTopRow(
-                                    width, height * 0.7), // Top half height
-                                _buildBottomRow(
-                                    width, height * 0.3), // Bottom half height
-                              ],
-                            );
-                          },
-                        ),
+                      Column(
+                        children: [
+                          Expanded(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                double width = constraints.maxWidth;
+                                double height = constraints.maxHeight;
+                                return Column(
+                                  children: [
+                                    _buildTopRow(
+                                        width, height * 0.7), // Top half height
+                                    _buildBottomRow(width,
+                                        height * 0.3), // Bottom half height
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       ),
+                      // アップロードされたアイコンを左上に表示 (Web対応)
+                      if (_uploadedIcon != null)
+                        Positioned(
+                          top: 16,
+                          left: 16,
+                          child: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: Image.network(
+                              _uploadedIcon,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -81,7 +141,7 @@ class _PhotoPageState extends State<PhotoPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
+                    const Text(
                       'Photo',
                       style: TextStyle(
                         fontSize: 32,
@@ -106,13 +166,13 @@ class _PhotoPageState extends State<PhotoPage> {
                 top: 16,
                 right: 16,
                 child: ElevatedButton(
-                  child: Icon(Icons.download, color: Colors.white),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black.withOpacity(0.5),
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(12),
+                    shape: const CircleBorder(),
+                    padding: const EdgeInsets.all(12),
                   ),
                   onPressed: _captureAndSavePng,
+                  child: Icon(Icons.download, color: Colors.white),
                 ),
               ),
             ],
@@ -127,7 +187,7 @@ class _PhotoPageState extends State<PhotoPage> {
     return Row(
       children: [
         _buildAspectRatioImage(
-            widget.photos.length > 0 ? widget.photos[0] : null,
+            widget.photos.isNotEmpty ? widget.photos[0] : null,
             width * 0.6,
             height), // The wider left image occupies 60% of width
         Column(
@@ -170,7 +230,7 @@ class _PhotoPageState extends State<PhotoPage> {
 
   // Creates a container for each image, maintaining the 3:4 aspect ratio
   Widget _buildAspectRatioImage(dynamic photo, double width, double height) {
-    return Container(
+    return SizedBox(
       width: width,
       height: height,
       child: AspectRatio(

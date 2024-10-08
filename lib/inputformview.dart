@@ -86,7 +86,7 @@ class _InputFormViewState extends State<InputFormView> {
     final directory = await getTemporaryDirectory();
     final imageName = path.basename(image.path);
     final savedImage =
-        await File(image.path).copy('${directory.path}/$imageName');
+        await File(image.path).copy('\${directory.path}/\$imageName');
     return savedImage.path;
   }
 
@@ -216,7 +216,7 @@ class _InputFormViewState extends State<InputFormView> {
     if (picked != null && picked != DateTime.now()) {
       setState(() {
         birthDateController.text =
-            "${picked.year}.${picked.month}.${picked.day}"; // 西暦.月.日形式
+            "\${picked.year}.\${picked.month}.\${picked.day}"; // 西暦.月.日形式
       });
     }
   }
@@ -234,96 +234,143 @@ class _InputFormViewState extends State<InputFormView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('タレントプロフィール入力'),
+        title:
+            const Text('タレントプロフィール入力', style: TextStyle(color: Colors.white)),
         elevation: 0,
+        backgroundColor: Colors.teal, // AppBarの背景色をモダンに変更
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Theme(
-              data: Theme.of(context).copyWith(
-                colorScheme: const ColorScheme.light(primary: Colors.blue),
-              ),
-              child: Stepper(
-                type: StepperType.vertical,
-                currentStep: _currentStep,
-                onStepTapped: (step) => setState(() => _currentStep = step),
-                onStepContinue: () {
-                  if (_currentStep < 6) {
-                    setState(() => _currentStep += 1);
-                  } else {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('プロフィールが保存されました')),
-                      );
+      body: Container(
+        color: Colors.grey[100], // 背景色を設定
+        child: Column(
+          children: [
+            Expanded(
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: const ColorScheme.light(primary: Colors.teal),
+                ),
+                child: Stepper(
+                  type: StepperType.vertical,
+                  currentStep: _currentStep,
+                  onStepTapped: (step) => setState(() => _currentStep = step),
+                  onStepContinue: () {
+                    if (_currentStep < 6) {
+                      setState(() => _currentStep += 1);
+                    } else {
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('プロフィールが保存されました')),
+                        );
+                      }
                     }
-                  }
-                },
-                onStepCancel: _currentStep > 0
-                    ? () => setState(() => _currentStep -= 1)
-                    : null,
-                steps: [
-                  Step(
-                    title: const Text('基本情報'),
-                    content: _buildCenteredForm(_buildBasicInfoForm()),
-                    isActive: _currentStep >= 0,
-                  ),
-                  Step(
-                    title: const Text('身体情報'),
-                    content: _buildCenteredForm(_buildPhysicalInfoForm()),
-                    isActive: _currentStep >= 1,
-                  ),
-                  Step(
-                    title: const Text('経歴・特技'),
-                    content: _buildCenteredForm(_buildSkillsAndEducationForm()),
-                    isActive: _currentStep >= 2,
-                  ),
-                  Step(
-                    title: const Text('SNS情報'),
-                    content: _buildCenteredForm(_buildSNSInfoForm()),
-                    isActive: _currentStep >= 3,
-                  ),
-                  Step(
-                    title: const Text('マネージャー情報'),
-                    content: _buildCenteredForm(_buildManagerInfoForm()),
-                    isActive: _currentStep >= 4,
-                  ),
-                  Step(
-                    title: const Text('キャリア情報'),
-                    content: _buildCenteredForm(_buildCareerForm()),
-                    isActive: _currentStep >= 5,
-                  ),
-                  Step(
-                    title: const Text('写真'),
-                    content: _buildCenteredForm(_buildPhotoForm()),
-                    isActive: _currentStep >= 6,
-                  ),
-                ],
+                  },
+                  onStepCancel: _currentStep > 0
+                      ? () => setState(() => _currentStep -= 1)
+                      : null,
+                  steps: [
+                    Step(
+                      title: const Text('基本情報'),
+                      content: _buildCenteredForm(_buildBasicInfoForm()),
+                      isActive: _currentStep >= 0,
+                    ),
+                    Step(
+                      title: const Text('身体情報'),
+                      content: _buildCenteredForm(_buildPhysicalInfoForm()),
+                      isActive: _currentStep >= 1,
+                    ),
+                    Step(
+                      title: const Text('経歴・特技'),
+                      content:
+                          _buildCenteredForm(_buildSkillsAndEducationForm()),
+                      isActive: _currentStep >= 2,
+                    ),
+                    Step(
+                      title: const Text('SNS情報'),
+                      content: _buildCenteredForm(_buildSNSInfoForm()),
+                      isActive: _currentStep >= 3,
+                    ),
+                    Step(
+                      title: const Text('マネージャー情報'),
+                      content: _buildCenteredForm(_buildManagerInfoForm()),
+                      isActive: _currentStep >= 4,
+                    ),
+                    Step(
+                      title: const Text('キャリア情報'),
+                      content: _buildCenteredForm(_buildCareerForm()),
+                      isActive: _currentStep >= 5,
+                    ),
+                    Step(
+                      title: const Text('写真'),
+                      content: _buildCenteredForm(_buildPhotoForm()),
+                      isActive: _currentStep >= 6,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: _goToProfilePage,
-                  child: const Text('プロフィールページを表示'),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                decoration: BoxDecoration(
+                  color: Colors.teal,
+                  borderRadius: BorderRadius.circular(12.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
-                ElevatedButton(
-                  onPressed: _goToCareerPage,
-                  child: const Text('キャリアページを表示'),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        onPressed: _goToProfilePage,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.teal,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        child: const Text('プロフィールページを表示'),
+                      ),
+                      SizedBox(width: 16),
+                      ElevatedButton(
+                        onPressed: _goToCareerPage,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.teal,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        child: const Text('キャリアページを表示'),
+                      ),
+                      SizedBox(width: 16),
+                      ElevatedButton(
+                        onPressed: _goToPhotoPage,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.teal,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        child: const Text('Photoページを表示'),
+                      ),
+                    ],
+                  ),
                 ),
-                ElevatedButton(
-                  onPressed: _goToPhotoPage, // Photoページに遷移
-                  child: const Text('Photoページを表示'),
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -363,8 +410,13 @@ class _InputFormViewState extends State<InputFormView> {
           ),
           _buildTextField('出身', Icons.location_on, birthPlaceController),
           // 背景画像選択ボタンを追加
+          SizedBox(height: 10),
           ElevatedButton(
             onPressed: _pickBackgroundImage,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.teal,
+              foregroundColor: Colors.white,
+            ),
             child: const Text('プロフィールページの背景画像を選択'),
           ),
         ],
@@ -469,12 +521,20 @@ class _InputFormViewState extends State<InputFormView> {
               );
             }
           },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.teal,
+            foregroundColor: Colors.white,
+          ),
           child: const Text('新しいカテゴリーを追加'),
         ),
-
         const SizedBox(height: 16),
         for (var entry in careerList.asMap().entries)
           Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            margin: const EdgeInsets.symmetric(vertical: 8.0),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -537,6 +597,10 @@ class _InputFormViewState extends State<InputFormView> {
                         );
                       }
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal,
+                      foregroundColor: Colors.white,
+                    ),
                     child: const Text('項目を追加'),
                   ),
                 ],
@@ -546,6 +610,10 @@ class _InputFormViewState extends State<InputFormView> {
         // キャリア背景画像選択ボタンを追加
         ElevatedButton(
           onPressed: _pickCareerBackgroundImage,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.teal,
+            foregroundColor: Colors.white,
+          ),
           child: const Text('キャリアページの背景画像を選択'),
         ),
       ],
@@ -559,6 +627,10 @@ class _InputFormViewState extends State<InputFormView> {
           icon: const Icon(Icons.add_a_photo),
           label: const Text('写真を追加'),
           onPressed: _pickImage,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.teal,
+            foregroundColor: Colors.white,
+          ),
         ),
         const SizedBox(height: 16),
         photos.isEmpty

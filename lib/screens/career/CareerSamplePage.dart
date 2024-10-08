@@ -71,139 +71,143 @@ class _CareerViewState extends State<CareerView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.teal,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Careerページ'),
+            const Text('Careerページ', style: TextStyle(color: Colors.white)),
             SizedBox(width: 10),
             ElevatedButton(
               onPressed: _pickIcon,
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
               child: const Text(
                 'アイコンをアップロード',
-                style: TextStyle(fontSize: 16, color: Colors.white),
+                style: TextStyle(fontSize: 16, color: Colors.teal),
               ),
             ),
           ],
         ),
       ),
-      body: Center(
-        child: AspectRatio(
-          aspectRatio: 3 / 4, // 常に3:4のアスペクト比に設定
-          child: Stack(
-            children: [
-              RepaintBoundary(
-                key: _globalKey,
-                child: Stack(
-                  children: [
-                    // 背景画像があるかどうかをチェック
-                    if (widget.backgroundImage != null) ...[
-                      Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: widget.backgroundImage is File
-                                  ? FileImage(widget.backgroundImage)
-                                  : NetworkImage(widget.backgroundImage),
-                              fit: BoxFit.cover, // 背景画像を常に表示
+      body: Container(
+        color: Colors.grey[300], // 背景色を灰色に変更
+        child: Center(
+          child: AspectRatio(
+            aspectRatio: 3 / 4, // 常に3:4のアスペクト比に設定
+            child: Stack(
+              children: [
+                RepaintBoundary(
+                  key: _globalKey,
+                  child: Stack(
+                    children: [
+                      // 背景画像があるかどうかをチェック
+                      if (widget.backgroundImage != null) ...[
+                        Positioned.fill(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: widget.backgroundImage is File
+                                    ? FileImage(widget.backgroundImage)
+                                    : NetworkImage(widget.backgroundImage),
+                                fit: BoxFit.cover, // 背景画像を常に表示
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      // 白いテキストボックスとテキストを表示
-                      Positioned(
-                        top: 80,
-                        left: 30,
-                        right: 30,
-                        child: Container(
-                          padding: const EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.8), // 半透明の白
-                            borderRadius: BorderRadius.circular(1),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildCareerDetails(context),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ] else ...[
-                      // 背景画像がない場合のメッセージ
-                      const Center(
-                        child: Text(
-                          'アップロードされた写真がありません',
-                          style: TextStyle(fontSize: 18, color: Colors.black),
-                        ),
-                      ),
-                    ],
-                    // 右上に表示するアップロードされたアイコン
-                    if (selectedIcon != null)
-                      Positioned(
-                        top: 16,
-                        left: 16, // アイコンの位置調整
-                        child: SizedBox(
-                          width: 50,
-                          height: 50,
-                          child: Image.network(
-                            selectedIcon,
-                            fit: BoxFit.cover,
+                        // 白いテキストボックスとテキストを表示
+                        Positioned(
+                          top: 80,
+                          left: 30,
+                          right: 30,
+                          child: Container(
+                            padding: const EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.8), // 半透明の白
+                              borderRadius: BorderRadius.circular(1),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildCareerDetails(context),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                  ],
-                ),
-              ),
-              // "Career" テキストを右上に表示
-              Positioned(
-                top: 28,
-                right: 50, // ダウンロードボタンの位置に合わせて適切な距離を設定
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text(
-                      'Career',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min, // テキストの幅に合わせる
-                      children: [
-                        Container(
-                          height: 3.0,
-                          width: 100, // アンダーラインの幅を設定
-                          color: Colors.black,
+                      ] else ...[
+                        // 背景画像がない場合のメッセージ
+                        const Center(
+                          child: Text(
+                            'アップロードされた写真がありません',
+                            style: TextStyle(fontSize: 18, color: Colors.black),
+                          ),
                         ),
                       ],
-                    ),
-                  ],
-                ),
-              ),
-              // ダウンロードボタン
-              Positioned(
-                top: 16,
-                right: 16,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black.withOpacity(0.5),
-                    shape: const CircleBorder(),
-                    padding: const EdgeInsets.all(12),
+                      // 右上に表示するアップロードされたアイコン
+                      if (selectedIcon != null)
+                        Positioned(
+                          top: 16,
+                          left: 16, // アイコンの位置調整
+                          child: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: Image.network(
+                              selectedIcon,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                  onPressed: _captureAndSavePng,
-                  child: Icon(Icons.download, color: Colors.white),
                 ),
-              ),
-            ],
+                // "Career" テキストを右上に表示
+                Positioned(
+                  top: 28,
+                  right: 50, // ダウンロードボタンの位置に合わせて適切な距離を設定
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      const Text(
+                        'Career',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min, // テキストの幅に合わせる
+                        children: [
+                          Container(
+                            height: 3.0,
+                            width: 100, // アンダーラインの幅を設定
+                            color: Colors.black,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                // ダウンロードボタン
+                Positioned(
+                  top: 16,
+                  right: 16,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black.withOpacity(0.5),
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(12),
+                    ),
+                    onPressed: _captureAndSavePng,
+                    child: Icon(Icons.download, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

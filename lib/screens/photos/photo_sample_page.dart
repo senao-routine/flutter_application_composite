@@ -63,119 +63,123 @@ class _PhotoPageState extends State<PhotoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.teal,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Photoページ'),
+            const Text('Photoページ', style: TextStyle(color: Colors.white)),
             SizedBox(width: 10),
             ElevatedButton(
               onPressed: _pickIcon,
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
               child: const Text(
                 'アイコンをアップロード',
-                style: TextStyle(fontSize: 16, color: Colors.white),
+                style: TextStyle(fontSize: 16, color: Colors.teal),
               ),
             ),
           ],
         ),
       ),
-      body: Center(
-        child: AspectRatio(
-          aspectRatio: 3 / 4,
-          child: Stack(
-            children: [
-              RepaintBoundary(
-                key: _globalKey,
-                child: Container(
-                  color: Colors.white,
-                  child: Stack(
-                    children: [
-                      Column(
-                        children: [
-                          Expanded(
-                            child: LayoutBuilder(
-                              builder: (context, constraints) {
-                                double width = constraints.maxWidth;
-                                double height = constraints.maxHeight;
-                                return Column(
-                                  children: [
-                                    _buildTopRow(
-                                        width, height * 0.7), // Top half height
-                                    _buildBottomRow(width,
-                                        height * 0.3), // Bottom half height
-                                  ],
-                                );
-                              },
+      body: Container(
+        color: Colors.grey[300], // 背景色を灰色に変更
+        child: Center(
+          child: AspectRatio(
+            aspectRatio: 3 / 4,
+            child: Stack(
+              children: [
+                RepaintBoundary(
+                  key: _globalKey,
+                  child: Container(
+                    color: Colors.white,
+                    child: Stack(
+                      children: [
+                        Column(
+                          children: [
+                            Expanded(
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  double width = constraints.maxWidth;
+                                  double height = constraints.maxHeight;
+                                  return Column(
+                                    children: [
+                                      _buildTopRow(width,
+                                          height * 0.7), // Top half height
+                                      _buildBottomRow(width,
+                                          height * 0.3), // Bottom half height
+                                    ],
+                                  );
+                                },
+                              ),
                             ),
+                          ],
+                        ),
+                        // アップロードされたアイコンを左上に表示 (Web対応)
+                        if (_uploadedIcon != null)
+                          Positioned(
+                            top: 16,
+                            left: 16,
+                            child: SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: Image.network(
+                                _uploadedIcon,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+                // "Photo" テキストを右上に表示
+                Positioned(
+                  top: 28,
+                  right: 50, // ダウンロードボタンの位置に合わせて適切な距離を設定
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      const Text(
+                        'Photo',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            height: 3.0,
+                            width: 100, // アンダーラインの幅を設定
+                            color: Colors.black,
                           ),
                         ],
                       ),
-                      // アップロードされたアイコンを左上に表示 (Web対応)
-                      if (_uploadedIcon != null)
-                        Positioned(
-                          top: 16,
-                          left: 16,
-                          child: SizedBox(
-                            width: 50,
-                            height: 50,
-                            child: Image.network(
-                              _uploadedIcon,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
                     ],
                   ),
                 ),
-              ),
-              // "Photo" テキストを右上に表示
-              Positioned(
-                top: 28,
-                right: 50, // ダウンロードボタンの位置に合わせて適切な距離を設定
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text(
-                      'Photo',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+                // ダウンロードボタン
+                Positioned(
+                  top: 16,
+                  right: 16,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black.withOpacity(0.5),
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(12),
                     ),
-                    Row(
-                      children: [
-                        Container(
-                          height: 3.0,
-                          width: 100, // アンダーラインの幅を設定
-                          color: Colors.black,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              // ダウンロードボタン
-              Positioned(
-                top: 16,
-                right: 16,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black.withOpacity(0.5),
-                    shape: const CircleBorder(),
-                    padding: const EdgeInsets.all(12),
+                    onPressed: _captureAndSavePng,
+                    child: Icon(Icons.download, color: Colors.white),
                   ),
-                  onPressed: _captureAndSavePng,
-                  child: Icon(Icons.download, color: Colors.white),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

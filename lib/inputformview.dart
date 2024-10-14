@@ -204,7 +204,7 @@ class _InputFormViewState extends State<InputFormView> {
     );
   }
 
-  // 日付選択のダイアログを表示するメソッド
+// 日付選択のダイアログを表示するメソッド
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -213,10 +213,11 @@ class _InputFormViewState extends State<InputFormView> {
       lastDate: DateTime.now(),
       locale: const Locale("ja"), // 日本語設定
     );
-    if (picked != null && picked != DateTime.now()) {
+    if (picked != null) {
       setState(() {
+        // 修正部分: pickedを年月日のみ保存するように変更
         birthDateController.text =
-            "\${picked.year}.\${picked.month}.\${picked.day}"; // 西暦.月.日形式
+            "${picked.year}.${picked.month.toString().padLeft(2, '0')}.${picked.day.toString().padLeft(2, '0')}";
       });
     }
   }

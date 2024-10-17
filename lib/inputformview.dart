@@ -28,6 +28,8 @@ class _InputFormViewState extends State<InputFormView> {
   TextEditingController nameController = TextEditingController();
   TextEditingController nameJapaneseController = TextEditingController();
   TextEditingController birthDateController = TextEditingController();
+  TextEditingController ageController = TextEditingController();
+
   TextEditingController birthPlaceController = TextEditingController();
   TextEditingController heightController = TextEditingController();
   TextEditingController weightController = TextEditingController();
@@ -154,6 +156,7 @@ class _InputFormViewState extends State<InputFormView> {
         builder: (context) => ProfileView(
           name: nameController.text,
           nameJapanese: nameJapaneseController.text,
+          age: ageController.text, // 年齢を渡す
           birthDate: birthDateController.text,
           birthPlace: birthPlaceController.text,
           height: heightController.text,
@@ -396,6 +399,7 @@ class _InputFormViewState extends State<InputFormView> {
           _buildTextField('名前（ローマ字）', Icons.person, nameController),
           _buildTextField(
               '名前（日本語）', Icons.person_outline, nameJapaneseController),
+          _buildTextField('年齢', Icons.cake, ageController), // 年齢の入力欄を追加
           // 生年月日の選択ウィジェット
           GestureDetector(
             onTap: () => _selectDate(context),

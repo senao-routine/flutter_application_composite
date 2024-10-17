@@ -13,6 +13,7 @@ class ProfileView extends StatefulWidget {
 
   final String name;
   final String nameJapanese;
+  final String age;
   final String birthDate;
   final String birthPlace;
   final String height;
@@ -38,6 +39,7 @@ class ProfileView extends StatefulWidget {
     super.key,
     required this.name,
     required this.nameJapanese,
+    required this.age, // 年齢プロパティを追加
     required this.birthDate,
     required this.birthPlace,
     required this.height,
@@ -118,24 +120,6 @@ class _ProfileViewState extends State<ProfileView> {
     }
   }
 
-  int calculateAge(String birthDate) {
-    try {
-      // 修正部分: birthDateControllerから取得した文字列をDateTimeに変換
-      DateTime birth = DateTime.parse(birthDate);
-      DateTime today = DateTime.now();
-
-      int age = today.year - birth.year;
-      if (today.month < birth.month ||
-          (today.month == birth.month && today.day < birth.day)) {
-        age--;
-      }
-      return age;
-    } catch (e) {
-      print("Date parsing error: $e");
-      return 0; // エラーハンドリングとして年齢を0に設定
-    }
-  }
-
   String formatDate(String birthDate) {
     try {
       DateTime birth;
@@ -159,7 +143,7 @@ class _ProfileViewState extends State<ProfileView> {
       }
 
       // 日付を "yyyy年MM月dd日" 形式にフォーマット
-      return "${birth.year}年${birth.month}月${birth.day}日";
+      return "\${birth.year}年\${birth.month}月\${birth.day}日";
     } catch (e) {
       print("Date formatting error: $e");
       return "不明な日付";
@@ -168,8 +152,6 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    int age = calculateAge(widget.birthDate);
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.teal, // AppBarの背景を緑に設定
@@ -200,279 +182,249 @@ class _ProfileViewState extends State<ProfileView> {
           double width = constraints.maxWidth;
           bool isMobile = width < 600;
 
-          return Container(
-            color: Colors.grey[300], // 背景色を灰色に変更
-            child: Center(
-              child: AspectRatio(
-                aspectRatio: 3 / 4, // 3:4のアスペクト比に設定
-                child: Stack(
-                  children: [
-                    RepaintBoundary(
-                      key: widget
-                          ._globalKey, // Assign the key to the RepaintBoundary
-                      child: Stack(
-                        children: [
-                          // 背景画像があるかどうかをチェック
-                          if (widget.backgroundImage != null) ...[
-                            Positioned.fill(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: widget.backgroundImage is File
-                                        ? FileImage(widget.backgroundImage)
-                                        : NetworkImage(widget.backgroundImage),
-                                    fit: BoxFit.cover, // 背景画像をフルスクリーンに調整
+          return SingleChildScrollView(
+            child: Container(
+              color: Colors.grey[300],
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: isMobile ? double.infinity : 400,
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 3 / 4,
+                    child: Stack(
+                      children: [
+                        RepaintBoundary(
+                          key: widget._globalKey,
+                          child: Stack(
+                            children: [
+                              // 背景画像があるかどうかをチェック
+                              if (widget.backgroundImage != null)
+                                Positioned.fill(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: widget.backgroundImage is File
+                                            ? FileImage(widget.backgroundImage)
+                                            : NetworkImage(
+                                                widget.backgroundImage),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              else
+                                const Center(
+                                  child: Text(
+                                    'アップロードされた写真がありません',
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.black),
                                   ),
                                 ),
-                              ),
-                            ),
-                          ] else ...[
-                            // 背景画像がない場合のメッセージ
-                            const Center(
-                              child: Text(
-                                'アップロードされた写真がありません',
-                                style: TextStyle(
-                                    fontSize: 18, color: Colors.black),
-                              ),
-                            ),
-                          ],
 
-                          // 左上にアイコンを表示
-                          if (selectedIcon != null)
-                            Positioned(
-                              top: 20,
-                              left: 20,
-                              child: Container(
-                                width: isMobile ? 40 : 60,
-                                height: isMobile ? 40 : 60,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: selectedIcon is File
-                                        ? FileImage(selectedIcon)
-                                        : NetworkImage(selectedIcon),
-                                    fit: BoxFit.cover,
+                              // 左上にアイコンを表示
+                              if (selectedIcon != null)
+                                Positioned(
+                                  top: isMobile ? 10 : 20,
+                                  left: isMobile ? 10 : 20,
+                                  child: Container(
+                                    width: isMobile ? 40 : 60,
+                                    height: isMobile ? 40 : 60,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                        image: selectedIcon is File
+                                            ? FileImage(selectedIcon)
+                                            : NetworkImage(selectedIcon),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
 
-                          // 名前〜趣味・特技を白いボックスに入れて左下に配置
-                          Positioned(
-                            left: 20,
-                            bottom: 10,
-                            child: Container(
-                              padding: const EdgeInsets.all(16.0),
-                              width: isMobile ? 200 : 260, // モバイルでは幅を調整
-                              height: isMobile ? 300 : 350, // モバイルでは高さを調整
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.8),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // 名前ローマ字と日本語を中央揃え、年齢を日本語の名前の横に表示
-                                  Center(
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          widget.name,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                              // 名前〜趣味・特技を白いボックスに入れて左下に配置
+                              Positioned(
+                                left: isMobile ? 10 : 20,
+                                right: isMobile ? 10 : null,
+                                bottom: isMobile ? 10 : 20,
+                                child: Container(
+                                  padding: const EdgeInsets.all(16.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.8),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // 名前ローマ字と日本語を中央揃え、年齢を日本語の名前の横に表示
+                                      Center(
+                                        child: Column(
                                           children: [
                                             Text(
-                                              widget.nameJapanese,
+                                              widget.name,
                                               style: const TextStyle(
-                                                fontSize: 28,
+                                                fontSize: 16,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.black,
                                               ),
                                             ),
-                                            const SizedBox(width: 5),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 15.0),
-                                              child: Text(
-                                                '($age)',
-                                                style: const TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.black,
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  widget.nameJapanese,
+                                                  style: const TextStyle(
+                                                    fontSize: 28,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black,
+                                                  ),
                                                 ),
-                                              ),
+                                                const SizedBox(width: 5),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 15.0),
+                                                  child: Text(
+                                                    '(${widget.age})',
+                                                    style: const TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                      const SizedBox(height: 20),
+                                      Center(
+                                        child: Wrap(
+                                          alignment: WrapAlignment.center,
+                                          spacing: 10.0,
+                                          runSpacing: 5.0,
+                                          children: [
+                                            Text('${widget.height} cm',
+                                                style: _detailTextStyle()),
+                                            Text('/ ${widget.weight} kg',
+                                                style: _detailTextStyle()),
+                                            Text('B: ${widget.bust}',
+                                                style: _detailTextStyle()),
+                                            Text('W: ${widget.waist}',
+                                                style: _detailTextStyle()),
+                                            Text('H: ${widget.hip}',
+                                                style: _detailTextStyle()),
+                                            Text('S: ${widget.shoeSize}',
+                                                style: _detailTextStyle()),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        '趣味: ${widget.hobby}',
+                                        style: _detailTextStyle()
+                                            .copyWith(fontSize: 14),
+                                      ),
+                                      Text(
+                                        '特技: ${widget.skill}',
+                                        style: _detailTextStyle()
+                                            .copyWith(fontSize: 14),
+                                      ),
+                                      Text(
+                                        '資格: ${widget.qualification}',
+                                        style: _detailTextStyle()
+                                            .copyWith(fontSize: 14),
+                                      ),
+                                      Text(
+                                        '学歴: ${widget.education}',
+                                        style: _detailTextStyle()
+                                            .copyWith(fontSize: 14),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 20),
-                                  Center(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(widget.birthDate,
-                                            style: _detailTextStyle()),
-                                        const SizedBox(width: 10),
-                                        Text('${widget.birthPlace}出身',
-                                            style: _detailTextStyle()),
-                                      ],
-                                    ),
-                                  ),
-                                  Center(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text('${widget.height} cm',
-                                            style: _detailTextStyle()),
-                                        const SizedBox(width: 10),
-                                        Text('/ ${widget.weight} kg',
-                                            style: _detailTextStyle()),
-                                      ],
-                                    ),
-                                  ),
-                                  Center(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text('B: ${widget.bust}',
-                                            style: _detailTextStyle()),
-                                        const SizedBox(width: 10),
-                                        Text('W: ${widget.waist}',
-                                            style: _detailTextStyle()),
-                                        const SizedBox(width: 10),
-                                        Text('H: ${widget.hip}',
-                                            style: _detailTextStyle()),
-                                        const SizedBox(width: 10),
-                                        Text('S: ${widget.shoeSize}',
-                                            style: _detailTextStyle()),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    '趣味: ${widget.hobby}',
-                                    style: _detailTextStyle()
-                                        .copyWith(fontSize: 14),
-                                  ),
-                                  Text(
-                                    '特技: ${widget.skill}',
-                                    style: _detailTextStyle()
-                                        .copyWith(fontSize: 14),
-                                  ),
-                                  Text(
-                                    '資格: ${widget.qualification}',
-                                    style: _detailTextStyle()
-                                        .copyWith(fontSize: 14),
-                                  ),
-                                  Text(
-                                    '学歴: ${widget.education}',
-                                    style: _detailTextStyle()
-                                        .copyWith(fontSize: 14),
-                                  ),
-                                  const SizedBox(height: 20),
-                                ],
+                                ),
                               ),
-                            ),
+                              // SNSの情報を白いボックスに表示
+                              Positioned(
+                                right: 20,
+                                bottom: isMobile ? 40 : 80,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8.0),
+                                  width: isMobile ? 150 : 200,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.8),
+                                    borderRadius: BorderRadius.circular(1),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      _buildSNSInfo(
+                                        'Twitter',
+                                        '@${widget.twitterAccount}',
+                                        'assets/images/twitter_icon.png',
+                                      ),
+                                      _buildSNSInfo(
+                                        'TikTok',
+                                        '@${widget.tiktokAccount}',
+                                        'assets/images/tiktok_icon.png',
+                                      ),
+                                      _buildSNSInfo(
+                                        'Instagram',
+                                        '@${widget.instagramAccount}',
+                                        'assets/images/instagram_icon.png',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              // マネージャー情報
+                              Positioned(
+                                right: 20,
+                                bottom: 10,
+                                child: Container(
+                                  padding: const EdgeInsets.all(6.0),
+                                  width: isMobile ? 180 : 220,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFADD1F9),
+                                    borderRadius: BorderRadius.circular(1),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '担当: ${widget.managerName}',
+                                        style: const TextStyle(
+                                            fontSize: 12, color: Colors.black),
+                                      ),
+                                      Text(
+                                        'Email: ${widget.managerEmail}',
+                                        style: const TextStyle(
+                                            fontSize: 12, color: Colors.black),
+                                      ),
+                                      Text(
+                                        'TEL: ${widget.managerPhone}',
+                                        style: const TextStyle(
+                                            fontSize: 12, color: Colors.black),
+                                      ),
+                                      Text(
+                                        'Casting with: ${widget.agency}',
+                                        style: const TextStyle(
+                                            fontSize: 12, color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          // SNSの情報を白いボックスに表示
-                          Positioned(
-                            right: 20,
-                            bottom: isMobile ? 80 : 120,
-                            child: Container(
-                              padding: const EdgeInsets.all(8.0),
-                              width: isMobile ? 150 : 200,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.8),
-                                borderRadius: BorderRadius.circular(1),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _buildSNSInfo(
-                                    'Twitter',
-                                    '@${widget.twitterAccount}',
-                                    'assets/images/twitter_icon.png',
-                                  ),
-                                  _buildSNSInfo(
-                                    'TikTok',
-                                    '@${widget.tiktokAccount}',
-                                    'assets/images/tiktok_icon.png',
-                                  ),
-                                  _buildSNSInfo(
-                                    'Instagram',
-                                    '@${widget.instagramAccount}',
-                                    'assets/images/instagram_icon.png',
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          // マネージャー情報
-                          Positioned(
-                            right: 20,
-                            bottom: 10,
-                            child: Container(
-                              padding: const EdgeInsets.all(6.0),
-                              width: isMobile ? 220 : 260,
-                              height: isMobile ? 80 : 93,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFADD1F9),
-                                borderRadius: BorderRadius.circular(1),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '担当: ${widget.managerName}',
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.black),
-                                  ),
-                                  Text(
-                                    'Email: ${widget.managerEmail}',
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.black),
-                                  ),
-                                  Text(
-                                    'TEL: ${widget.managerPhone}',
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.black),
-                                  ),
-                                  Text(
-                                    'Casting with: ${widget.agency}',
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.black),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Download button positioned at the top right
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black.withOpacity(0.5),
-                          shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(12),
                         ),
-                        onPressed: _captureAndSavePng,
-                        child: Icon(Icons.download, color: Colors.white),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),

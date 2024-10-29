@@ -87,7 +87,7 @@ class _CareerViewState extends State<CareerView> {
                 ),
               ),
               child: const Text(
-                'アイコンをアップロード',
+                'アイコン追加',
                 style: TextStyle(fontSize: 16, color: Colors.teal),
               ),
             ),

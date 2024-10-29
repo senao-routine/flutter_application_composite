@@ -79,7 +79,7 @@ class _PhotoPageState extends State<PhotoPage> {
                 ),
               ),
               child: const Text(
-                'アイコンをアップロード',
+                'アイコン追加',
                 style: TextStyle(fontSize: 16, color: Colors.teal),
               ),
             ),

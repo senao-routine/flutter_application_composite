@@ -170,8 +170,8 @@ class _ProfileViewState extends State<ProfileView> {
                 ),
               ),
               child: Text(
-                'アイコンをアップロード',
-                style: TextStyle(fontSize: 16, color: Colors.teal),
+                'アイコン追加',
+                style: TextStyle(fontSize: 14, color: Colors.teal),
               ),
             ),
           ],
@@ -188,7 +188,7 @@ class _ProfileViewState extends State<ProfileView> {
               child: Center(
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxWidth: isMobile ? double.infinity : 400,
+                    maxWidth: isMobile ? double.infinity : 600,
                   ),
                   child: AspectRatio(
                     aspectRatio: 3 / 4,
@@ -228,10 +228,10 @@ class _ProfileViewState extends State<ProfileView> {
                                   top: isMobile ? 10 : 20,
                                   left: isMobile ? 10 : 20,
                                   child: Container(
-                                    width: isMobile ? 40 : 60,
-                                    height: isMobile ? 40 : 60,
+                                    width: isMobile ? 50 : 70,
+                                    height: isMobile ? 50 : 70,
                                     decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
+                                      borderRadius: BorderRadius.circular(0),
                                       image: DecorationImage(
                                         image: selectedIcon is File
                                             ? FileImage(selectedIcon)
@@ -244,14 +244,16 @@ class _ProfileViewState extends State<ProfileView> {
 
                               // 名前〜趣味・特技を白いボックスに入れて左下に配置
                               Positioned(
-                                left: isMobile ? 10 : 20,
-                                right: isMobile ? 10 : null,
-                                bottom: isMobile ? 10 : 20,
+                                left: isMobile ? 8 : 10,
+                                bottom: isMobile ? 10 : 10,
                                 child: Container(
+                                  width: isMobile ? 240 : 290, // スマホの場合は幅を固定
+                                  height: isMobile ? 300 : 355, // スマホの場合は高さを調整
+
                                   padding: const EdgeInsets.all(16.0),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withOpacity(0.8),
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: BorderRadius.circular(1),
                                   ),
                                   child: Column(
                                     crossAxisAlignment:
@@ -263,8 +265,8 @@ class _ProfileViewState extends State<ProfileView> {
                                           children: [
                                             Text(
                                               widget.name,
-                                              style: const TextStyle(
-                                                fontSize: 16,
+                                              style: TextStyle(
+                                                fontSize: isMobile ? 13 : 16,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.black,
                                               ),
@@ -301,46 +303,101 @@ class _ProfileViewState extends State<ProfileView> {
                                       ),
                                       const SizedBox(height: 20),
                                       Center(
-                                        child: Wrap(
-                                          alignment: WrapAlignment.center,
-                                          spacing: 10.0,
-                                          runSpacing: 5.0,
+                                        child: Column(
                                           children: [
-                                            Text('${widget.height} cm',
-                                                style: _detailTextStyle()),
-                                            Text('/ ${widget.weight} kg',
-                                                style: _detailTextStyle()),
-                                            Text('B: ${widget.bust}',
-                                                style: _detailTextStyle()),
-                                            Text('W: ${widget.waist}',
-                                                style: _detailTextStyle()),
-                                            Text('H: ${widget.hip}',
-                                                style: _detailTextStyle()),
-                                            Text('S: ${widget.shoeSize}',
-                                                style: _detailTextStyle()),
+                                            Wrap(
+                                              alignment: WrapAlignment.center,
+                                              spacing: 10.0,
+                                              runSpacing: 0.6,
+                                              children: [
+                                                Text(widget.birthDate,
+                                                    style: _detailTextStyle()
+                                                        .copyWith(
+                                                      fontSize:
+                                                          isMobile ? 12 : 14,
+                                                    )),
+                                                const Text('/'),
+                                                Text(widget.birthPlace,
+                                                    style: _detailTextStyle()
+                                                        .copyWith(
+                                                      fontSize:
+                                                          isMobile ? 12 : 14,
+                                                    )),
+                                              ],
+                                            ),
+                                            Wrap(
+                                              alignment: WrapAlignment.center,
+                                              spacing: 10.0,
+                                              runSpacing: 0.6,
+                                              children: [
+                                                Text('${widget.height} cm',
+                                                    style: _detailTextStyle()
+                                                        .copyWith(
+                                                      fontSize:
+                                                          isMobile ? 12 : 14,
+                                                    )),
+                                                Text('/ ${widget.weight} kg',
+                                                    style: _detailTextStyle()
+                                                        .copyWith(
+                                                      fontSize:
+                                                          isMobile ? 12 : 14,
+                                                    )),
+                                              ],
+                                            ),
+                                            Wrap(
+                                              alignment: WrapAlignment.center,
+                                              spacing: 10.0,
+                                              runSpacing: 0.6,
+                                              children: [
+                                                Text('B: ${widget.bust}',
+                                                    style: _detailTextStyle()
+                                                        .copyWith(
+                                                      fontSize:
+                                                          isMobile ? 12 : 14,
+                                                    )),
+                                                Text('W: ${widget.waist}',
+                                                    style: _detailTextStyle()
+                                                        .copyWith(
+                                                      fontSize:
+                                                          isMobile ? 12 : 14,
+                                                    )),
+                                                Text('H: ${widget.hip}',
+                                                    style: _detailTextStyle()
+                                                        .copyWith(
+                                                      fontSize:
+                                                          isMobile ? 12 : 14,
+                                                    )),
+                                                Text('S: ${widget.shoeSize}',
+                                                    style: _detailTextStyle()
+                                                        .copyWith(
+                                                      fontSize:
+                                                          isMobile ? 12 : 14,
+                                                    )),
+                                              ],
+                                            ),
                                           ],
                                         ),
                                       ),
                                       const SizedBox(height: 10),
                                       Text(
                                         '趣味: ${widget.hobby}',
-                                        style: _detailTextStyle()
-                                            .copyWith(fontSize: 14),
+                                        style: _detailTextStyle().copyWith(
+                                            fontSize: isMobile ? 12 : 14),
                                       ),
                                       Text(
                                         '特技: ${widget.skill}',
-                                        style: _detailTextStyle()
-                                            .copyWith(fontSize: 14),
+                                        style: _detailTextStyle().copyWith(
+                                            fontSize: isMobile ? 12 : 14),
                                       ),
                                       Text(
                                         '資格: ${widget.qualification}',
-                                        style: _detailTextStyle()
-                                            .copyWith(fontSize: 14),
+                                        style: _detailTextStyle().copyWith(
+                                            fontSize: isMobile ? 12 : 14),
                                       ),
                                       Text(
                                         '学歴: ${widget.education}',
-                                        style: _detailTextStyle()
-                                            .copyWith(fontSize: 14),
+                                        style: _detailTextStyle().copyWith(
+                                            fontSize: isMobile ? 12 : 14),
                                       ),
                                     ],
                                   ),
@@ -349,10 +406,11 @@ class _ProfileViewState extends State<ProfileView> {
                               // SNSの情報を白いボックスに表示
                               Positioned(
                                 right: 20,
-                                bottom: isMobile ? 40 : 80,
+                                bottom: isMobile ? 75 : 80,
                                 child: Container(
                                   padding: const EdgeInsets.all(8.0),
-                                  width: isMobile ? 150 : 200,
+                                  width: isMobile ? 160 : 190,
+                                  height: isMobile ? 140 : 155,
                                   decoration: BoxDecoration(
                                     color: Colors.white.withOpacity(0.8),
                                     borderRadius: BorderRadius.circular(1),
@@ -365,16 +423,19 @@ class _ProfileViewState extends State<ProfileView> {
                                         'Twitter',
                                         '@${widget.twitterAccount}',
                                         'assets/images/twitter_icon.png',
+                                        isMobile ? 40.0 : 45.0,
                                       ),
                                       _buildSNSInfo(
                                         'TikTok',
                                         '@${widget.tiktokAccount}',
                                         'assets/images/tiktok_icon.png',
+                                        isMobile ? 40.0 : 45.0,
                                       ),
                                       _buildSNSInfo(
                                         'Instagram',
                                         '@${widget.instagramAccount}',
                                         'assets/images/instagram_icon.png',
+                                        isMobile ? 40.0 : 45.0,
                                       ),
                                     ],
                                   ),
@@ -383,10 +444,11 @@ class _ProfileViewState extends State<ProfileView> {
                               // マネージャー情報
                               Positioned(
                                 right: 20,
-                                bottom: 10,
+                                bottom: isMobile ? 10 : 10,
                                 child: Container(
                                   padding: const EdgeInsets.all(6.0),
-                                  width: isMobile ? 180 : 220,
+                                  width: isMobile ? 220 : 260,
+                                  height: isMobile ? 58 : 65,
                                   decoration: BoxDecoration(
                                     color: const Color(0xFFADD1F9),
                                     borderRadius: BorderRadius.circular(1),
@@ -397,23 +459,31 @@ class _ProfileViewState extends State<ProfileView> {
                                     children: [
                                       Text(
                                         '担当: ${widget.managerName}',
-                                        style: const TextStyle(
-                                            fontSize: 12, color: Colors.black),
+                                        style: TextStyle(
+                                          fontSize: isMobile ? 8 : 9,
+                                          color: Colors.black,
+                                        ),
                                       ),
                                       Text(
                                         'Email: ${widget.managerEmail}',
-                                        style: const TextStyle(
-                                            fontSize: 12, color: Colors.black),
+                                        style: TextStyle(
+                                          fontSize: isMobile ? 8 : 9,
+                                          color: Colors.black,
+                                        ),
                                       ),
                                       Text(
                                         'TEL: ${widget.managerPhone}',
-                                        style: const TextStyle(
-                                            fontSize: 12, color: Colors.black),
+                                        style: TextStyle(
+                                          fontSize: isMobile ? 8 : 9,
+                                          color: Colors.black,
+                                        ),
                                       ),
                                       Text(
                                         'Casting with: ${widget.agency}',
-                                        style: const TextStyle(
-                                            fontSize: 12, color: Colors.black),
+                                        style: TextStyle(
+                                          fontSize: isMobile ? 8 : 9,
+                                          color: Colors.black,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -441,13 +511,14 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  Widget _buildSNSInfo(String platform, String account, String iconPath) {
+  Widget _buildSNSInfo(
+      String platform, String account, String iconPath, double iconSize) {
     return Row(
       children: [
         Image.asset(
           iconPath,
-          width: 30,
-          height: 30,
+          width: iconSize,
+          height: iconSize,
         ),
         const SizedBox(width: 10),
         Text(account),

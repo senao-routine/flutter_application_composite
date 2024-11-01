@@ -244,10 +244,10 @@ class _ProfileViewState extends State<ProfileView> {
 
                               // 名前〜趣味・特技を白いボックスに入れて左下に配置
                               Positioned(
-                                left: isMobile ? 8 : 10,
-                                bottom: isMobile ? 10 : 10,
+                                left: isMobile ? 5 : 10,
+                                bottom: isMobile ? 5 : 10,
                                 child: Container(
-                                  width: isMobile ? 240 : 290, // スマホの場合は幅を固定
+                                  width: isMobile ? 220 : 290, // スマホの場合は幅を固定
                                   height: isMobile ? 300 : 355, // スマホの場合は高さを調整
 
                                   padding: const EdgeInsets.all(16.0),
@@ -405,7 +405,7 @@ class _ProfileViewState extends State<ProfileView> {
                               ),
                               // SNSの情報を白いボックスに表示
                               Positioned(
-                                right: 20,
+                                right: isMobile ? 5 : 10,
                                 bottom: isMobile ? 75 : 80,
                                 child: Container(
                                   padding: const EdgeInsets.all(8.0),
@@ -443,11 +443,11 @@ class _ProfileViewState extends State<ProfileView> {
                               ),
                               // マネージャー情報
                               Positioned(
-                                right: 20,
-                                bottom: isMobile ? 10 : 10,
+                                right: isMobile ? 5 : 10,
+                                bottom: isMobile ? 5 : 10,
                                 child: Container(
                                   padding: const EdgeInsets.all(6.0),
-                                  width: isMobile ? 220 : 260,
+                                  width: isMobile ? 180 : 260,
                                   height: isMobile ? 58 : 65,
                                   decoration: BoxDecoration(
                                     color: const Color(0xFFADD1F9),

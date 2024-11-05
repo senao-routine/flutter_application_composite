@@ -229,7 +229,7 @@ class _ProfileViewState extends State<ProfileView> {
                                   ),
                                 ),
 
-                              // 左上にアイコンを表示
+                              // 左上にアイコンを表
                               if (selectedIcon != null)
                                 Positioned(
                                   top: isMobile ? 10 : 20,
@@ -274,8 +274,8 @@ class _ProfileViewState extends State<ProfileView> {
                                 left: isMobile ? 5 : 10,
                                 bottom: isMobile ? 5 : 10,
                                 child: Container(
-                                  width: isMobile ? 220 : 290, // スマホの場合は幅を固定
-                                  height: isMobile ? 300 : 355, // スマホの場合は高さを調整
+                                  width: isMobile ? 180 : 290, // スマホ版の幅を固定
+                                  height: isMobile ? 220 : 355, // スマホ版の高さを調整
 
                                   padding: const EdgeInsets.all(16.0),
                                   decoration: BoxDecoration(
@@ -341,14 +341,14 @@ class _ProfileViewState extends State<ProfileView> {
                                                     style: _detailTextStyle()
                                                         .copyWith(
                                                       fontSize:
-                                                          isMobile ? 12 : 14,
+                                                          isMobile ? 8 : 14,
                                                     )),
                                                 const Text('/'),
                                                 Text(widget.birthPlace,
                                                     style: _detailTextStyle()
                                                         .copyWith(
                                                       fontSize:
-                                                          isMobile ? 12 : 14,
+                                                          isMobile ? 8 : 14,
                                                     )),
                                               ],
                                             ),
@@ -361,13 +361,13 @@ class _ProfileViewState extends State<ProfileView> {
                                                     style: _detailTextStyle()
                                                         .copyWith(
                                                       fontSize:
-                                                          isMobile ? 12 : 14,
+                                                          isMobile ? 8 : 14,
                                                     )),
                                                 Text('/ ${widget.weight} kg',
                                                     style: _detailTextStyle()
                                                         .copyWith(
                                                       fontSize:
-                                                          isMobile ? 12 : 14,
+                                                          isMobile ? 8 : 14,
                                                     )),
                                               ],
                                             ),
@@ -380,25 +380,25 @@ class _ProfileViewState extends State<ProfileView> {
                                                     style: _detailTextStyle()
                                                         .copyWith(
                                                       fontSize:
-                                                          isMobile ? 12 : 14,
+                                                          isMobile ? 8 : 14,
                                                     )),
                                                 Text('W: ${widget.waist}',
                                                     style: _detailTextStyle()
                                                         .copyWith(
                                                       fontSize:
-                                                          isMobile ? 12 : 14,
+                                                          isMobile ? 8 : 14,
                                                     )),
                                                 Text('H: ${widget.hip}',
                                                     style: _detailTextStyle()
                                                         .copyWith(
                                                       fontSize:
-                                                          isMobile ? 12 : 14,
+                                                          isMobile ? 8 : 14,
                                                     )),
                                                 Text('S: ${widget.shoeSize}',
                                                     style: _detailTextStyle()
                                                         .copyWith(
                                                       fontSize:
-                                                          isMobile ? 12 : 14,
+                                                          isMobile ? 8 : 14,
                                                     )),
                                               ],
                                             ),
@@ -409,22 +409,22 @@ class _ProfileViewState extends State<ProfileView> {
                                       Text(
                                         '趣味: ${widget.hobby}',
                                         style: _detailTextStyle().copyWith(
-                                            fontSize: isMobile ? 12 : 14),
+                                            fontSize: isMobile ? 8 : 14),
                                       ),
                                       Text(
                                         '特技: ${widget.skill}',
                                         style: _detailTextStyle().copyWith(
-                                            fontSize: isMobile ? 12 : 14),
+                                            fontSize: isMobile ? 8 : 14),
                                       ),
                                       Text(
                                         '資格: ${widget.qualification}',
                                         style: _detailTextStyle().copyWith(
-                                            fontSize: isMobile ? 12 : 14),
+                                            fontSize: isMobile ? 8 : 14),
                                       ),
                                       Text(
                                         '学歴: ${widget.education}',
                                         style: _detailTextStyle().copyWith(
-                                            fontSize: isMobile ? 12 : 14),
+                                            fontSize: isMobile ? 8 : 14),
                                       ),
                                     ],
                                   ),

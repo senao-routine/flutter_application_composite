@@ -43,9 +43,11 @@ class _CareerViewState extends State<CareerView> {
     }
   }
 
-  // Method to capture the screen and download as an image
+  // RepaintBoundaryの中身をキャプチャして画像として保存するメソッド
+  // RepaintBoundaryタグで囲まれた部分のみが保存対象となる
   Future<void> _captureAndSavePng() async {
     try {
+      // RepaintBoundaryをキャプチャ
       RenderRepaintBoundary boundary = _globalKey.currentContext!
           .findRenderObject() as RenderRepaintBoundary;
       ui.Image image = await boundary.toImage(pixelRatio: 3.0);
@@ -53,6 +55,7 @@ class _CareerViewState extends State<CareerView> {
           await image.toByteData(format: ui.ImageByteFormat.png);
       Uint8List pngBytes = byteData!.buffer.asUint8List();
 
+      // キャプチャした画像をダウンロード
       final blob = html.Blob([pngBytes]);
       final url = html.Url.createObjectUrlFromBlob(blob);
       final anchor = html.AnchorElement(href: url)
@@ -72,27 +75,34 @@ class _CareerViewState extends State<CareerView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.teal,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Careerページ', style: TextStyle(color: Colors.white)),
-            SizedBox(width: 10),
-            ElevatedButton(
-              onPressed: _pickIcon,
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text(
-                'アイコン追加',
-                style: TextStyle(fontSize: 16, color: Colors.teal),
-              ),
-            ),
-          ],
+        title: Center(
+          child: Text('Careerページ', style: TextStyle(color: Colors.white)),
         ),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'アイコン追加') {
+                setState(() {
+                  selectedIcon = AssetImage('assets/images/mk_room_logo.png');
+                });
+              } else if (value == 'アイコンをアップロード') {
+                _pickIcon();
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return {'アイコン追加', 'アイコンをアップロード'}.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.download, color: Colors.white),
+            onPressed: _captureAndSavePng,
+          ),
+        ],
       ),
       body: Container(
         color: Colors.grey[300], // 背景色を灰色に変更
@@ -101,6 +111,7 @@ class _CareerViewState extends State<CareerView> {
             aspectRatio: 3 / 4, // 常に3:4のアスペクト比に設定
             child: Stack(
               children: [
+                // RepaintBoundaryで囲まれた部分のみが画像として保存される
                 RepaintBoundary(
                   key: _globalKey,
                   child: Stack(
@@ -155,55 +166,29 @@ class _CareerViewState extends State<CareerView> {
                           child: SizedBox(
                             width: 50,
                             height: 50,
-                            child: Image.network(
-                              selectedIcon,
-                              fit: BoxFit.cover,
+                            child: selectedIcon is AssetImage
+                                ? Image(image: selectedIcon)
+                                : Image.network(selectedIcon,
+                                    fit: BoxFit.cover),
+                          ),
+                        ),
+                      // "Career" テキストを右上に表示
+                      Positioned(
+                        top: 2,
+                        right: 30,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Image.asset(
+                              'assets/images/career_logo.png', // 画像ファイルのパス
+                              width: 100, // サイズを小さく調整
+                              height: 100,
+                              fit: BoxFit.contain, // 画像全体を表示
                             ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                // "Career" テキストを右上に表示
-                Positioned(
-                  top: 28,
-                  right: 50, // ダウンロードボタンの位置に合わせて適切な距離を設定
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      const Text(
-                        'Career',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          ],
                         ),
                       ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min, // テキストの幅に合わせる
-                        children: [
-                          Container(
-                            height: 3.0,
-                            width: 100, // アンダーラインの幅を設定
-                            color: Colors.black,
-                          ),
-                        ],
-                      ),
                     ],
-                  ),
-                ),
-                // ダウンロードボタン
-                Positioned(
-                  top: 16,
-                  right: 16,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black.withOpacity(0.5),
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(12),
-                    ),
-                    onPressed: _captureAndSavePng,
-                    child: Icon(Icons.download, color: Colors.white),
                   ),
                 ),
               ],

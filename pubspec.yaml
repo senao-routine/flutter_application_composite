@@ -43,6 +43,10 @@ flutter:
     - assets/images/twitter_icon.png
     - assets/images/tiktok_icon.png
     - assets/images/instagram_icon.png
+    - assets/images/photo_logo.png
+    - assets/images/career_logo.png
+    - assets/images/profile_logo.png
+    - assets/images/mk_room_logo.png
   fonts:
     - family: CustomFont
       fonts:

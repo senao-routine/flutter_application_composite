@@ -86,7 +86,7 @@ class _ProfileViewState extends State<ProfileView> {
         ..click();
       html.Url.revokeObjectUrl(url);
 
-      ScaffoldMessenger.of(widget._globalKey.currentContext!)
+      ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text('画像を保存しました')));
     } catch (e) {
       print("キャプチャエラー: $e");
@@ -154,28 +154,35 @@ class _ProfileViewState extends State<ProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.teal, // AppBarの背景を緑に設定
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('プロフィールページ', style: TextStyle(color: Colors.white)),
-            SizedBox(width: 10),
-            ElevatedButton(
-              onPressed: _pickIcon,
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                'アイコン追加',
-                style: TextStyle(fontSize: 14, color: Colors.teal),
-              ),
-            ),
-          ],
+        backgroundColor: Colors.teal,
+        title: Center(
+          child: Text('ProfilePage', style: TextStyle(color: Colors.white)),
         ),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'アイコン追加') {
+                setState(() {
+                  selectedIcon = AssetImage('assets/images/mk_room_logo.png');
+                });
+              } else if (value == 'アイコンをアップロード') {
+                _pickIcon();
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return {'アイコン追加', 'アイコンをアップロード'}.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.download, color: Colors.white),
+            onPressed: _captureAndSavePng,
+          ),
+        ],
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -198,7 +205,7 @@ class _ProfileViewState extends State<ProfileView> {
                           key: widget._globalKey,
                           child: Stack(
                             children: [
-                              // 背景画像があるかどうかをチェック
+                              // 景画像があかどうかをチェック
                               if (widget.backgroundImage != null)
                                 Positioned.fill(
                                   child: Container(
@@ -235,12 +242,32 @@ class _ProfileViewState extends State<ProfileView> {
                                       image: DecorationImage(
                                         image: selectedIcon is File
                                             ? FileImage(selectedIcon)
-                                            : NetworkImage(selectedIcon),
+                                            : selectedIcon is String
+                                                ? NetworkImage(selectedIcon)
+                                                : selectedIcon,
                                         fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),
                                 ),
+
+                              // Move the logo inside the RepaintBoundary
+                              Positioned(
+                                top: 2,
+                                right: 30, // Adjust the position as needed
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Image.asset(
+                                      'assets/images/profile_logo.png', // Path to your image file
+                                      width: 100, // Adjust the size as needed
+                                      height: 100,
+                                      fit: BoxFit
+                                          .contain, // Ensure the entire image is displayed
+                                    ),
+                                  ],
+                                ),
+                              ),
 
                               // 名前〜趣味・特技を白いボックスに入れて左下に配置
                               Positioned(
@@ -403,7 +430,7 @@ class _ProfileViewState extends State<ProfileView> {
                                   ),
                                 ),
                               ),
-                              // SNSの情報を白いボックスに表示
+                              // SNSの情報を白いボックスに示
                               Positioned(
                                 right: isMobile ? 5 : 10,
                                 bottom: isMobile ? 75 : 80,
